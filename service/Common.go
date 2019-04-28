@@ -21,6 +21,7 @@ func init() {
 //启动服务内容
 func Start() error {
 
+	//接收系统退出消息
 	go func() {
 		ch := make(chan os.Signal, 1)
 		signal.Notify(ch,
