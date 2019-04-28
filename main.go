@@ -76,12 +76,21 @@ func main() {
 	}
 }
 
-type program struct{}
+type program struct {
+	isRunning bool
+}
 
 func (p *program) Start(s service.Service) error {
+	if p.isRunning {
+		return nil
+	}
+	log.Warn("Service Starting")
+	defer log.Warn("Service Start Complete")
 	err := p.run()
 	if err != nil {
 		log.Error(fmt.Sprintf("服务启动时遇到错误：%s", err.Error()))
+	} else {
+		p.isRunning = true
 	}
 	go func() {
 		select {
@@ -99,14 +108,16 @@ func (p *program) Start(s service.Service) error {
 
 func (p *program) run() error {
 	//服务所执行的代码
-	log.Warn("Service Starting")
-	defer log.Warn("Service Start Complete")
 	{
 		return myService.Start()
 	}
 }
 
 func (p *program) Stop(s service.Service) error {
+	if !p.isRunning {
+		return nil
+	}
+	p.isRunning = false
 	log.Warn("Service Stopping")
 	defer log.Warn("Service Stopped")
 	{
