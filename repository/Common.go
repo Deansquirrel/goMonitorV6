@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/Deansquirrel/goMonitorV6/global"
 	"github.com/Deansquirrel/goMonitorV6/object"
 	"github.com/Deansquirrel/goToolMSSql"
@@ -10,8 +11,20 @@ import (
 import log "github.com/Deansquirrel/goToolLog"
 
 func GetConfigList(taskType object.TaskType) []object.ITaskConfig {
-	//TODO 获取配置列表
-	list := make([]object.ITaskConfig, 0)
+	rep, err := NewConfigRepository(taskType)
+	if err != nil {
+		log.Error(fmt.Sprintf("get task config rep error: %s", err.Error()))
+		return nil
+	}
+	if rep == nil {
+		log.Error(fmt.Sprintf("get task config rep error: rep is nil"))
+		return nil
+	}
+	list, err := rep.GetConfigList()
+	if err != nil {
+		log.Error(fmt.Sprintf("get task config list error: %s", err.Error()))
+		return nil
+	}
 	return list
 }
 

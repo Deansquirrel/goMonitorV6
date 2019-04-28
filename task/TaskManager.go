@@ -170,7 +170,6 @@ func (tm *taskManager) refreshConfig() {
 }
 
 func (tm *taskManager) clearHisData() {
-	log.Debug("clearHisData")
 	for _, t := range tm.taskList {
 		t.ClearHisData()
 	}

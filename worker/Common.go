@@ -4,6 +4,7 @@ import "github.com/Deansquirrel/goMonitorV6/object"
 
 type IWorker interface {
 	GetMsg()
+	ClearHisData()
 	GetChErr() <-chan error
 }
 

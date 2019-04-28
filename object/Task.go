@@ -1,6 +1,10 @@
 package object
 
-import "reflect"
+import (
+	"database/sql"
+	"fmt"
+	"reflect"
+)
 
 //taskManager对外接口对象
 type ITaskManager interface {
@@ -74,4 +78,76 @@ func (config *IntTaskConfig) IsEqual(c ITaskConfig) bool {
 	default:
 		return false
 	}
+}
+
+type ITaskConfigRepositoryResource interface {
+	GetSqlGetConfig() string
+	GetSqlGetConfigList() string
+	DataWrapper(rows *sql.Rows) ([]ITaskConfig, error)
+}
+
+const sqlGetIntTaskConfig = "" +
+	"SELECT B.[FId],B.[FServer],B.[FPort],B.[FDbName],B.[FDbUser]," +
+	"B.[FDbPwd],B.[FSearch],B.[FCron],B.[FCheckMax],B.[FCheckMin]," +
+	"B.[FMsgTitle],B.[FMsgContent]" +
+	" FROM [MConfig] A" +
+	" INNER JOIN [IntTaskConfig] B ON A.[FId] = B.[FId]"
+
+const sqlGetIntTaskConfigById = "" +
+	"SELECT B.[FId],B.[FServer],B.[FPort],B.[FDbName],B.[FDbUser]," +
+	"B.[FDbPwd],B.[FSearch],B.[FCron],B.[FCheckMax],B.[FCheckMin]," +
+	"B.[FMsgTitle],B.[FMsgContent]" +
+	" FROM [MConfig] A" +
+	" INNER JOIN [IntTaskConfig] B ON A.[FId] = B.[FId]" +
+	" WHERE B.[FId]=?"
+
+type IntTaskConfigRepositoryResource struct {
+}
+
+func (IntTaskConfigRepositoryResource) GetSqlGetConfig() string {
+	return sqlGetIntTaskConfigById
+}
+
+func (IntTaskConfigRepositoryResource) GetSqlGetConfigList() string {
+	return sqlGetIntTaskConfig
+}
+
+func (IntTaskConfigRepositoryResource) DataWrapper(rows *sql.Rows) ([]ITaskConfig, error) {
+	defer func() {
+		_ = rows.Close()
+	}()
+	var fId, fServer, fDbName, fDbUser, fDbPwd, fSearch, fCron, fMsgTitle, fMsgContent string
+	var fPort, fCheckMax, fCheckMin int
+	resultList := make([]ITaskConfig, 0)
+	var err error
+	for rows.Next() {
+		err = rows.Scan(
+			&fId, &fServer, &fPort, &fDbName, &fDbUser,
+			&fDbPwd, &fSearch, &fCron, &fCheckMax, &fCheckMin,
+			&fMsgTitle, &fMsgContent)
+		if err != nil {
+			log.Error(fmt.Sprintf("convert data error: %s", err.Error()))
+			return nil, err
+		}
+		config := IntTaskConfig{
+			FId:         fId,
+			FServer:     fServer,
+			FPort:       fPort,
+			FDbName:     fDbName,
+			FDbUser:     fDbUser,
+			FDbPwd:      fDbPwd,
+			FSearch:     fSearch,
+			FCron:       fCron,
+			FCheckMax:   fCheckMax,
+			FCheckMin:   fCheckMin,
+			FMsgTitle:   fMsgTitle,
+			FMsgContent: fMsgContent,
+		}
+		resultList = append(resultList, &config)
+	}
+	if rows.Err() != nil {
+		log.Error(fmt.Sprintf("convert data error: %s", rows.Err().Error()))
+		return nil, rows.Err()
+	}
+	return resultList, nil
 }

@@ -9,8 +9,6 @@ import (
 	"github.com/robfig/cron"
 )
 
-import log "github.com/Deansquirrel/goToolLog"
-
 func NewTask(taskType object.TaskType, config object.ITaskConfig) object.ITask {
 	t := task{
 		taskType: taskType,
@@ -35,8 +33,11 @@ type task struct {
 }
 
 func (t *task) ClearHisData() {
-	//TODO ClearHisData
-	log.Debug("ClearHisData")
+	if t.config == nil {
+		return
+	}
+	w := worker.GetWorker(t.config)
+	w.ClearHisData()
 }
 
 func (t *task) GetTaskConfig() object.ITaskConfig {
