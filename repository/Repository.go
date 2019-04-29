@@ -63,3 +63,29 @@ func (r *configRepository) GetConfigList() ([]object.ITaskConfig, error) {
 	}
 	return list, nil
 }
+
+type INotifyRepository interface {
+	GetNotify(id string) (object.INotifyConfig, error)
+	GetNotifyList() ([]object.INotifyConfig, error)
+}
+
+func NewNotifyRepository(notifyType object.NotifyType) (INotifyRepository, error) {
+	switch notifyType {
+	case object.DingTalkRobot:
+		return &notifyRepository{&object.DingTalkRobotNotifyRepositoryResource{}}, nil
+	default:
+		return nil, errors.New(fmt.Sprintf("unexpected notify type %d", notifyType))
+	}
+}
+
+type notifyRepository struct {
+	resource object.INotifyRepositoryResource
+}
+
+func (nr *notifyRepository) GetNotify(id string) (object.INotifyConfig, error) {
+	return nil, nil
+}
+
+func (nr *notifyRepository) GetNotifyList() ([]object.INotifyConfig, error) {
+	return nil, nil
+}

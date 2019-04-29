@@ -37,7 +37,9 @@ func (t *task) ClearHisData() {
 		return
 	}
 	w := worker.GetWorker(t.config)
-	w.ClearHisData()
+	if w != nil {
+		w.ClearHisData()
+	}
 }
 
 func (t *task) GetTaskConfig() object.ITaskConfig {

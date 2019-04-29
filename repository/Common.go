@@ -10,7 +10,7 @@ import (
 
 import log "github.com/Deansquirrel/goToolLog"
 
-func GetConfigList(taskType object.TaskType) []object.ITaskConfig {
+func GetTaskConfigList(taskType object.TaskType) []object.ITaskConfig {
 	rep, err := NewConfigRepository(taskType)
 	if err != nil {
 		log.Error(fmt.Sprintf("get task config rep error: %s", err.Error()))
@@ -28,8 +28,25 @@ func GetConfigList(taskType object.TaskType) []object.ITaskConfig {
 	return list
 }
 
-type Common struct {
+func GetNotifyConfig(notifyType object.NotifyType, id string) object.INotifyConfig {
+	rep, err := NewNotifyRepository(notifyType)
+	if err != nil {
+		log.Error(fmt.Sprintf("get notify config rep error: %s", err.Error()))
+		return nil
+	}
+	if rep == nil {
+		log.Error(fmt.Sprintf("get notify config rep error: rep is nil"))
+		return nil
+	}
+	config, err := rep.GetNotify(id)
+	if err != nil {
+		log.Error(fmt.Sprintf("get notify config list error: %s", err.Error()))
+		return nil
+	}
+	return config
 }
+
+type Common struct{}
 
 //获取配置库连接配置
 func (r *Common) getConfigDBConfig() *goToolMSSql.MSSqlConfig {

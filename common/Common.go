@@ -1,11 +1,14 @@
 package common
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/BurntSushi/toml"
 	"github.com/Deansquirrel/goMonitorV6/global"
 	"github.com/Deansquirrel/goMonitorV6/object"
 	"github.com/Deansquirrel/goToolCommon"
+	"io"
+	"os"
 )
 
 import log "github.com/Deansquirrel/goToolLog"
@@ -32,17 +35,39 @@ func LoadSysConfig() {
 		return
 	}
 	if b {
-		var c object.SystemConfig
-		_, err := toml.DecodeFile(fileFullPath, &c)
+		configFile, err := os.Open(fileFullPath)
+		defer func() {
+			_ = configFile.Close()
+		}()
 		if err != nil {
-			log.Error(fmt.Sprintf("加载配置文件时遇到错误：%s，Paht：%s", err.Error(), fileFullPath))
+			log.Error(fmt.Sprintf("打开配置文件时遇到错误：%s，Path：%s", err.Error(), fileFullPath))
 			return
 		}
+		buf := make([]byte, 3)
+		_, err = io.ReadFull(configFile, buf)
+		if err != nil {
+			log.Error(fmt.Sprintf("读取配置文件时遇到错误：%s，Path：%s", err.Error(), fileFullPath))
+			return
+		}
+		if bytes.Equal(buf, []byte{0xEF, 0xBB, 0xBF}) == false {
+			_, err = configFile.Seek(0, 0)
+			if err != nil {
+				log.Error(fmt.Sprintf("读取配置文件时遇到错误：%s，Path：%s", err.Error(), fileFullPath))
+				return
+			}
+		}
+		var c object.SystemConfig
+		_, err = toml.DecodeReader(configFile, &c)
+		if err != nil {
+			log.Error(fmt.Sprintf("读取配置文件时遇到错误：%s，Path：%s", err.Error(), fileFullPath))
+			return
+		}
+
 		c.FormatConfig()
 		global.SysConfig = &c
 		//global.IsConfigExists = true
 	} else {
-		log.Warn("未找到配置文件 %s")
+		log.Warn(fmt.Sprintf("未找到配置文件 %s", fileFullPath))
 	}
 }
 

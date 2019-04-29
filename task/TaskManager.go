@@ -138,7 +138,7 @@ func (tm *taskManager) startRegularJob() {
 
 func (tm *taskManager) refreshConfig() {
 	for _, taskType := range object.TaskTypeList {
-		repConfigList := repository.GetConfigList(taskType)
+		repConfigList := repository.GetTaskConfigList(taskType)
 		repConfigMap := make(map[string]object.ITaskConfig, 0)
 		repConfigIdList := make([]string, 0)
 		for _, repConfig := range repConfigList {

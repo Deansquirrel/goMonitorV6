@@ -53,7 +53,7 @@ func Start() error {
 }
 
 func startTask(taskType object.TaskType) {
-	configList := repository.GetConfigList(taskType)
+	configList := repository.GetTaskConfigList(taskType)
 	for _, config := range configList {
 		t := task.NewTask(taskType, config)
 		taskManager.GetChRegister() <- t

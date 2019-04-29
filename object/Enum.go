@@ -18,3 +18,16 @@ func init() {
 	TaskTypeList = append(TaskTypeList, Health)
 	TaskTypeList = append(TaskTypeList, WebState)
 }
+
+type NotifyType int
+
+const (
+	DingTalkRobot NotifyType = iota
+)
+
+var NotifyTypeList []NotifyType
+
+func init() {
+	NotifyTypeList = make([]NotifyType, 0)
+	NotifyTypeList = append(NotifyTypeList, DingTalkRobot)
+}

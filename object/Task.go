@@ -6,6 +6,8 @@ import (
 	"reflect"
 )
 
+import log "github.com/Deansquirrel/goToolLog"
+
 //taskManager对外接口对象
 type ITaskManager interface {
 	GetTaskIdList() []string
@@ -86,23 +88,25 @@ type ITaskConfigRepositoryResource interface {
 	DataWrapper(rows *sql.Rows) ([]ITaskConfig, error)
 }
 
-const sqlGetIntTaskConfig = "" +
-	"SELECT B.[FId],B.[FServer],B.[FPort],B.[FDbName],B.[FDbUser]," +
-	"B.[FDbPwd],B.[FSearch],B.[FCron],B.[FCheckMax],B.[FCheckMin]," +
-	"B.[FMsgTitle],B.[FMsgContent]" +
-	" FROM [MConfig] A" +
-	" INNER JOIN [IntTaskConfig] B ON A.[FId] = B.[FId]"
+//Sql IntTaskConfig
+const (
+	sqlGetIntTaskConfig = "" +
+		"SELECT B.[FId],B.[FServer],B.[FPort],B.[FDbName],B.[FDbUser]," +
+		"B.[FDbPwd],B.[FSearch],B.[FCron],B.[FCheckMax],B.[FCheckMin]," +
+		"B.[FMsgTitle],B.[FMsgContent]" +
+		" FROM [MConfig] A" +
+		" INNER JOIN [IntTaskConfig] B ON A.[FId] = B.[FId]"
 
-const sqlGetIntTaskConfigById = "" +
-	"SELECT B.[FId],B.[FServer],B.[FPort],B.[FDbName],B.[FDbUser]," +
-	"B.[FDbPwd],B.[FSearch],B.[FCron],B.[FCheckMax],B.[FCheckMin]," +
-	"B.[FMsgTitle],B.[FMsgContent]" +
-	" FROM [MConfig] A" +
-	" INNER JOIN [IntTaskConfig] B ON A.[FId] = B.[FId]" +
-	" WHERE B.[FId]=?"
+	sqlGetIntTaskConfigById = "" +
+		"SELECT B.[FId],B.[FServer],B.[FPort],B.[FDbName],B.[FDbUser]," +
+		"B.[FDbPwd],B.[FSearch],B.[FCron],B.[FCheckMax],B.[FCheckMin]," +
+		"B.[FMsgTitle],B.[FMsgContent]" +
+		" FROM [MConfig] A" +
+		" INNER JOIN [IntTaskConfig] B ON A.[FId] = B.[FId]" +
+		" WHERE B.[FId]=?"
+)
 
-type IntTaskConfigRepositoryResource struct {
-}
+type IntTaskConfigRepositoryResource struct{}
 
 func (IntTaskConfigRepositoryResource) GetSqlGetConfig() string {
 	return sqlGetIntTaskConfigById
